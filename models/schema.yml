@@ -108,3 +108,21 @@ models:
         description: purchase_cost (quantity * purchase_price)
       - name: margin
         description: margin (revenue - purchase cost)
+  - name: finance_days
+    description: daily finance report
+    columns:
+      - name: date_date
+        description: primary key
+        tests:
+          - unique
+          - not_null
+      - name: nb_transactions
+        description: total amount of sales
+      - name: revenue
+        description: total revenue
+      - name: average_basket
+        description: average basket (avg revenue)
+      - name: margin (revenue - purchase cost)
+        description: total margin
+      - name: operational_margin
+        description: total operational margin (margin + shipping_fee - logcost - ship_cost)
