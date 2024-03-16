@@ -122,7 +122,49 @@ models:
         description: total revenue
       - name: average_basket
         description: average basket (avg revenue)
-      - name: margin (revenue - purchase cost)
-        description: total margin
+      - name: margin 
+        description: total margin (revenue - purchase cost)
       - name: operational_margin
         description: total operational margin (margin + shipping_fee - logcost - ship_cost)
+  - name: stg_data__product
+    description: data from products
+    columns:
+      - name: products_id
+        description: primary key
+        tests:
+          - unique
+          - not_null
+      - name: purchase_price
+        description: purchase price
+  - name: stg_data__sales
+    description: data from sales
+    tests:
+      - unique:
+          column_name: "(orders_id || '-' || products_id)"
+      - not_null:
+          column_name: "(orders_id || '-' || products_id)"
+    columns:
+      - name: date_date
+        description: date of sale
+      - name: orders_id
+        description: order id
+      - name: products_id
+        description: product id
+      - name: revenue
+        description: revenue from sales
+      - name: quantity
+        description: quantity sold
+  - name: stg_data__ship
+    description: data from shipping
+    columns:
+      - name: orders_id
+        description: primary key
+        tests:
+          - unique
+          - not_null
+      - name: shipping_fee
+        description: shipping fee paid by customer
+      - name: logcost
+        description: cost of log paid (company)
+      - name: ship_cost
+        description: cost of shipping (company)
