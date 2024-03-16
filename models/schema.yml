@@ -1,16 +1,16 @@
 version: 2
 
 sources:
-  - name: gz_raw_data
-    schema: raw
-    description: data from Circle
+  - name: data
+    schema: gz_raw_data
+    description: data from gz
     tables:
-      - name: raw_gz_sales
-        identifier: sales
+      - name: sales
+        identifier: raw_gz_sales
         description: sales information about each product and order
-      - name: raw_gz_product
-        identifier: product
+      - name: product
+        identifier: raw_gz_product
         description: details about each product
-      - name: raw_gz_ship
-        identifier: ship
+      - name: ship
+        identifier: raw_gz_ship
         description: details about shipping per order
