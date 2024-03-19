@@ -53,6 +53,81 @@ sources:
             description: log cost for order
           - name: ship_cost
             description: shipping cost for order
+      - name: adwords
+        identifier: raw_gz_adwords
+        description: campaign details for paid source adwords
+        columns:
+          - name: date_date
+            description: date for campaign
+            tests: 
+              - unique
+              - not_null
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign
+      - name: bing
+        identifier: raw_gz_bing
+        description: campaign details for paid source bing
+        columns:
+          - name: date_date
+            description: date for campaign
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign
+      - name: criteo
+        identifier: raw_gz_criteo
+        description: campaign details for paid source criteo
+        columns:
+          - name: date_date
+            description: date for campaign
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign
+      - name: facebook
+        identifier: raw_gz_facebook
+        description: campaign details for paid source facebook
+        columns:
+          - name: date_date
+            description: date for campaign
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign      
 models:
   - name: int_orders_margin
     description: margin per order and date
