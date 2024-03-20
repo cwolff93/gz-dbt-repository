@@ -269,3 +269,17 @@ models:
         description: number of impressions for campaign
       - name: click
         description: number of clicks for campaign
+  - name: int_campaigns_day
+    description: aggregated ads information per day
+    columns:
+      - name: date_date
+        description: date for campaign (primary key)
+        tests:
+          - unique
+          - not_null
+      - name: ads_cost
+        description: total ads cost per day
+      - name: ads_impressions
+        description: total impressions per day
+      - name: ads_clicks
+        description: total clicks per day
