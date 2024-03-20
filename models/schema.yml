@@ -210,7 +210,7 @@ models:
     description: union of all staging ads tables
     tests:
       - unique:
-          column_name: "(date_date || '-' || campaign_name)"
+          column_name: "(date_date || '-' || paid_source || '-' || campaign_name)"
       - not_null:
           column_name:
             (date_date, paid_source, campaign_key, campaign_name, ads_cost, impression, click)
