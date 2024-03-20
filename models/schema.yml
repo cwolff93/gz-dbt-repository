@@ -59,9 +59,6 @@ sources:
         columns:
           - name: date_date
             description: date for campaign
-            tests: 
-              - unique
-              - not_null
           - name: paid_source
             description: name of source
           - name: campaign_key
@@ -250,3 +247,25 @@ models:
         description: cost of log paid (company)
       - name: ship_cost
         description: cost of shipping (company)
+  - name: int_campaigns
+    description: union of all staging ads tables
+    tests:
+      - unique:
+          column_name: "(date_date || '-' || campaign_name)"
+      - not_null:
+          column_name: "(date_date || '-' || campaign_name)"
+    columns:
+      - name: date_date
+        description: date for campaign
+      - name: paid_source
+        description: name of source
+      - name: campaign_key
+        description: key for campaign
+      - name: camPGN_name
+        description: detailed campaign name
+      - name: ads_cost
+        description: cost for ads
+      - name: impression
+        description: number of impressions for campaign
+      - name: click
+        description: number of clicks for campaign
