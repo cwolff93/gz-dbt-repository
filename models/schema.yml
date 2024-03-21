@@ -20,13 +20,13 @@ sources:
           - name: date_date
             description: date of purchase
           - name: orders_id
-            description: order id for purchase
+            description: order identifier for purchase
           - name: products_id
-            description: product id for purchase
+            description: product identifier for purchase
           - name: revenue
             description: revenue generated from purchase
           - name: quantity
-            description: quantity sold
+            description: quantity sold in purchase
       - name: product
         identifier: raw_gz_product
         description: details about each product
@@ -53,15 +53,90 @@ sources:
             description: log cost for order
           - name: ship_cost
             description: shipping cost for order
+      - name: adwords
+        identifier: raw_gz_adwords
+        description: campaign details for paid source adwords
+        columns:
+          - name: date_date
+            description: date for campaign
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads for that campaign
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign
+      - name: bing
+        identifier: raw_gz_bing
+        description: campaign details for paid source bing
+        columns:
+          - name: date_date
+            description: date for campaign
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads for that campaign
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign
+      - name: criteo
+        identifier: raw_gz_criteo
+        description: campaign details for paid source criteo
+        columns:
+          - name: date_date
+            description: date for campaign
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads for that campaign
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign
+      - name: facebook
+        identifier: raw_gz_facebook
+        description: campaign details for paid source facebook
+        columns:
+          - name: date_date
+            description: date for campaign
+          - name: paid_source
+            description: name of source
+          - name: campaign_key
+            description: key for campaign
+          - name: camPGN_name
+            description: detailed campaign name
+          - name: ads_cost
+            description: cost for ads for that campaign
+          - name: impression
+            description: number of impressions for campaign
+          - name: click
+            description: number of clicks for campaign      
 models:
+################## INTERMEDIATE ##################
   - name: int_orders_margin
     description: margin per order and date
+    tests:
+      - unique:
+          column_name: orders_id
+      - not_null:
+          column_name: (orders_id, date_date, revenue, quantity, purchase_cost, margin)
     columns:
       - name: orders_id
         description: primary key
-        tests:
-          - unique
-          - not_null
       - name: date_date
         description: date of the order
       - name: revenue
@@ -74,16 +149,32 @@ models:
         description: sum of margin (revenue - purchase cost)
   - name: int_orders_operational
     description: operational margin by day and order
+    tests:
+      - unique:
+          column_name: orders_id
+      - not_null:
+          column_name: (orders_id, date_date, operational_margin, quantity, revenue, purchase_cost, margin, shipping_fee, logcost)    
     columns:
       - name: orders_id
         description: primary key
-        tests:
-          - unique
-          - not_null
       - name: date_date
         description: day of order
       - name: operational_margin
         description: margin + shipping_fee - logcost - ship_cost
+      - name: quantity
+        description: quantity by day and order
+      - name: revenue
+        description: revenue by day and order
+      - name: purchase_cost
+        description: purchase cost by day and order
+      - name: margin
+        description: margin by day and order
+      - name: shipping_fee
+        description: shipping fee paid by customer by day and order
+      - name: logcost
+        description: cost of log paid (company) by day and order
+      - name: ship_cost
+        description: cost of shipping (company) by day and order
   - name: int_sales_margin
     description: calculate margin and purchase cost
     tests:
@@ -115,6 +206,48 @@ models:
         description: purchase_cost (quantity * purchase_price)
       - name: margin
         description: margin (revenue - purchase cost)
+  - name: int_campaigns
+    description: union of all staging ads tables
+    tests:
+      - unique:
+          column_name: "(date_date || '-' || paid_source || '-' || campaign_name)"
+      - not_null:
+          column_name:
+            (date_date, paid_source, campaign_key, campaign_name, ads_cost, impression, click)
+    columns:
+      - name: date_date
+        description: date for campaign
+      - name: paid_source
+        description: name of source
+      - name: campaign_key
+        description: key for campaign
+      - name: campaign_name
+        description: detailed campaign name
+      - name: ads_cost
+        description: cost for ads
+      - name: impression
+        description: number of impressions for campaign
+      - name: click
+        description: number of clicks for campaign
+  - name: int_campaigns_day
+    description: aggregated ads information per day
+    tests:
+      - not_null:
+          column_name:
+            (ads_cost, ads_impressions, ads_clicks)
+    columns:
+      - name: date_date
+        description: date for campaign (primary key)
+        tests:
+          - unique
+          - not_null
+      - name: ads_cost
+        description: total ads cost per day
+      - name: ads_impressions
+        description: total impressions per day
+      - name: ads_clicks
+        description: total clicks per day
+################## MARTS ##################
   - name: finance_days
     description: daily finance report
     columns:
@@ -133,6 +266,30 @@ models:
         description: total margin (revenue - purchase cost)
       - name: operational_margin
         description: total operational margin (margin + shipping_fee - logcost - ship_cost)
+  - name: finance_campaigns_day
+    description: financial and campaign information per day
+    tests:
+      - not_null:
+          column_name:
+            - date_date
+            - ads_margin
+            - average_basket
+            - operational_margin
+            - ads_cost
+    columns:
+      - name: date_date
+        description: primary key
+        tests:
+          - unique
+      - name: ads_margin
+        description: operational_margin - ads_cost
+      - name: average_basket
+        description: average basket per day (average revenue)
+      - name: operational_margin
+        description: total operational margin per day (margin + shipping_fee - logcost - ship_cost)
+      - name: ads_cost
+        description: total cost of ads for all campaigns for the day
+################## STAGING ##################
   - name: stg_data__product
     description: data from products
     columns:
@@ -149,7 +306,12 @@ models:
       - unique:
           column_name: "(orders_id || '-' || products_id)"
       - not_null:
-          column_name: "(orders_id || '-' || products_id)"
+          column_name: 
+            - "(orders_id || '-' || products_id)"
+            - date_date
+            - orders_id
+            - products_id
+            - quantity    
     columns:
       - name: date_date
         description: date of sale
@@ -175,3 +337,64 @@ models:
         description: cost of log paid (company)
       - name: ship_cost
         description: cost of shipping (company)
+  - name: stg_data__adwords
+    description: data from adwords campaigns
+    tests:
+      - unique:
+          column_name: "(date_date || '-' || campaign_name)"
+      - not_null:
+          column_name:
+            (date_date, paid_source, campaign_key, campaign_name, ads_cost, impression, click)
+    columns:
+      - name: date_date
+      - name: paid_source
+      - name: campaign_key
+      - name: ads_cost
+      - name: impression
+      - name: click
+  - name: stg_data__bing
+    description: data from bing campaigns
+    tests:
+      - unique:
+          column_name: "(date_date || '-' || campaign_name)"
+      - not_null:
+          column_name:
+            (date_date, paid_source, campaign_key, campaign_name, ads_cost, impression, click)
+    columns:
+      - name: date_date
+      - name: paid_source
+      - name: campaign_key
+      - name: ads_cost
+      - name: impression
+      - name: click
+  - name: stg_data__criteo
+    description: data from criteo campaigns
+    tests:
+      - unique:
+          column_name: "(date_date || '-' || campaign_name)"
+      - not_null:
+          column_name:
+            (date_date, paid_source, campaign_key, campaign_name, ads_cost, impression, click)
+    columns:
+      - name: date_date
+      - name: paid_source
+      - name: campaign_key
+      - name: ads_cost
+      - name: impression
+      - name: click
+  - name: stg_data__facebook
+    description: data from facebook campaigns
+    tests:
+      - unique:
+          column_name: "(date_date || '-' || campaign_name)"
+      - not_null:
+          column_name:
+            (date_date, paid_source, campaign_key, campaign_name, ads_cost, impression, click)
+    columns:
+      - name: date_date
+      - name: paid_source
+      - name: campaign_key
+      - name: ads_cost
+      - name: impression
+      - name: click
+  
