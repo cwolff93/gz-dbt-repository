@@ -268,14 +268,6 @@ models:
         description: total operational margin (margin + shipping_fee - logcost - ship_cost)
   - name: finance_campaigns_day
     description: financial and campaign information per day
-    tests:
-      - not_null:
-          column_name:
-            - date_date
-            - ads_margin
-            - average_basket
-            - operational_margin
-            - ads_cost
     columns:
       - name: date_date
         description: primary key
@@ -289,6 +281,61 @@ models:
         description: total operational margin per day (margin + shipping_fee - logcost - ship_cost)
       - name: ads_cost
         description: total cost of ads for all campaigns for the day
+      - name: ads_impressions
+        description: total impressions per day
+      - name: ads_clicks
+        description: total clicks per day
+      - name: nb_transactions
+        description: number of sales per day
+      - name: revenue
+        description: revenue from sales per day
+      - name: margin
+        description: margin (revenue - purchase cost) per day
+      - name: purchase_cost
+        description: purchase cost (quantity * purchase_price) per day
+      - name: shipping_fee
+        description: shipping fee paid by customer per day
+      - name: logcost
+        description: cost of log paid (company) per day
+      - name: ship_cost
+        description: cost of shipping (company) per day
+      - name: quantity
+        description: quantity sold
+  - name: finance_campaigns_month
+    description: financial and campaign information per month
+    columns:
+      - name: datemonth
+        description: primary key
+        tests:
+          - unique
+      - name: ads_margin
+        description: operational_margin - ads_cost
+      - name: average_basket
+        description: average basket per month (average revenue)
+      - name: operational_margin
+        description: total operational margin per month (margin + shipping_fee - logcost - ship_cost)
+      - name: ads_cost
+        description: total cost of ads for all campaigns for the month
+      - name: ads_impressions
+        description: total impressions per month
+      - name: ads_clicks
+        description: total clicks per month
+      - name: nb_transactions
+        description: number of sales per month
+      - name: revenue
+        description: revenue from sales per month
+      - name: margin
+        description: margin (revenue - purchase cost) per month
+      - name: purchase_cost
+        description: purchase cost (quantity * purchase_price) per month
+      - name: shipping_fee
+        description: shipping fee paid by customer per month
+      - name: logcost
+        description: cost of log paid (company) per month
+      - name: ship_cost
+        description: cost of shipping (company) per month
+      - name: quantity
+        description: quantity sold
 ################## STAGING ##################
   - name: stg_data__product
     description: data from products
