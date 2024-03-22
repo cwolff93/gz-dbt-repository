@@ -189,6 +189,7 @@ models:
             - quantity
             - purchase_cost
             - margin
+            - margin_percent
     columns:
       - name: date_date
         description: day of sale
@@ -206,6 +207,8 @@ models:
         description: purchase_cost (quantity * purchase_price)
       - name: margin
         description: margin (revenue - purchase cost)
+      - name: margin_percent
+        description: margin divided by revenue (margin/revenue)
   - name: int_campaigns
     description: union of all staging ads tables
     tests:
